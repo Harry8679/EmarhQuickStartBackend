@@ -22,6 +22,7 @@ class Module
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
+    // L'ordre du module dans le cours
     #[ORM\Column]
     private ?int $orderInCourse = null;
 
