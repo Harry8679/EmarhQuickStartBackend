@@ -44,9 +44,16 @@ class Course
     #[ORM\OneToMany(targetEntity: Module::class, mappedBy: 'course')]
     private Collection $modules;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'course')]
+    private Collection $projects;
+
     public function __construct()
     {
         $this->modules = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,6 +169,36 @@ class Course
             // set the owning side to null (unless already changed)
             if ($module->getCourse() === $this) {
                 $module->setCourse(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getCourse() === $this) {
+                $project->setCourse(null);
             }
         }
 
