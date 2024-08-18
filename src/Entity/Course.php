@@ -56,6 +56,10 @@ class Course
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'course')]
     private Collection $reviews;
 
+    #[ORM\ManyToOne(inversedBy: 'courses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
     public function __construct()
     {
         $this->modules = new ArrayCollection();
@@ -238,6 +242,18 @@ class Course
                 $review->setCourse(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }
