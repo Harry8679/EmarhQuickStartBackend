@@ -22,6 +22,7 @@ class Course
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    // ['Débutant', 'Intermédiaire', 'Avancé']
     #[ORM\Column(length: 255)]
     private ?string $level = null;
 
