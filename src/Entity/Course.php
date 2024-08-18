@@ -66,12 +66,19 @@ class Course
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'courses')]
     private Collection $tags;
 
+    /**
+     * @var Collection<int, Discussion>
+     */
+    #[ORM\OneToMany(targetEntity: Discussion::class, mappedBy: 'course')]
+    private Collection $discussions;
+
     public function __construct()
     {
         $this->modules = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->discussions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -287,6 +294,36 @@ class Course
     {
         if ($this->tags->removeElement($tag)) {
             $tag->removeCourse($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Discussion>
+     */
+    public function getDiscussions(): Collection
+    {
+        return $this->discussions;
+    }
+
+    public function addDiscussion(Discussion $discussion): static
+    {
+        if (!$this->discussions->contains($discussion)) {
+            $this->discussions->add($discussion);
+            $discussion->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscussion(Discussion $discussion): static
+    {
+        if ($this->discussions->removeElement($discussion)) {
+            // set the owning side to null (unless already changed)
+            if ($discussion->getCourse() === $this) {
+                $discussion->setCourse(null);
+            }
         }
 
         return $this;
