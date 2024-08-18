@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DiscussionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,6 +32,17 @@ class Discussion
     #[ORM\ManyToOne(inversedBy: 'discussions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Course $course = null;
+
+    /**
+     * @var Collection<int, Response>
+     */
+    #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'discussion')]
+    private Collection $responses;
+
+    public function __construct()
+    {
+        $this->responses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -92,6 +105,36 @@ class Discussion
     public function setCourse(?Course $course): static
     {
         $this->course = $course;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Response>
+     */
+    public function getResponses(): Collection
+    {
+        return $this->responses;
+    }
+
+    public function addResponse(Response $response): static
+    {
+        if (!$this->responses->contains($response)) {
+            $this->responses->add($response);
+            $response->setDiscussion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponse(Response $response): static
+    {
+        if ($this->responses->removeElement($response)) {
+            // set the owning side to null (unless already changed)
+            if ($response->getDiscussion() === $this) {
+                $response->setDiscussion(null);
+            }
+        }
 
         return $this;
     }
